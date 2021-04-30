@@ -1,0 +1,60 @@
+﻿@model RecruitmentAgency.Models.Customer
+
+    <div class="modal fade" id="customerDetails" role="dialog" tabindex="-1">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Customer details</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">
+                            @Html.DisplayNameFor(model => model.FirstName)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.FirstName)
+                        </dd>
+                        <dt class="col-sm-4">
+                            @Html.DisplayNameFor(model => model.LastName)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.LastName)
+                        </dd>
+                        <dt class="col-sm-4">
+                            @Html.DisplayNameFor(model => model.Company)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.Company.Name)
+                        </dd>
+                        <dt class="col-sm-4">
+                            @Html.DisplayNameFor(model => model.Email)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.Email)
+                        </dd>
+                        <dt class="col-sm-4">
+                            @Html.DisplayNameFor(model => model.PhoneNumber)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.PhoneNumber)
+                        </dd>
+                        <dt class="col-sm-4">
+                            @Html.DisplayNameFor(model => model.Rating)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.Rating)
+                        </dd>
+                    </dl>
+                </div>
+                <div class="modal-footer">
+                    @if (ViewData["ShowIndebtedness"].Equals(true))
+                    {
+                        <a class="btn btn-primary" asp-controller="Customers" asp-action="Indebtedness" asp-route-customerId="@Model.CustomerId">Indebtedness</a>
+                    }
+                    <a class="btn btn-outline-primary" asp-controller="Customers" asp-action="Edit" asp-route-id="@Model.CustomerId">Edit</a>
+
+                    <button class="btn btn-light" type="button" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>

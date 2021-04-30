@@ -1,0 +1,49 @@
+﻿
+@model RecruitmentAgency.Models.Application
+
+<div class="modal fade" id="createApplications" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center border-0">
+                <h4 class="modal-title">Add application to vacancy</h4>
+            </div>
+            <form asp-action="Create" asp-controller="Applications" onsubmit="onSubmit(event)">
+                @Html.HiddenFor(x => x.VacancyId)
+                <div class="modal-body">
+                    <section>
+                        <div id="multple-step-form-n" class="container overflow-hidden">
+
+                            <div id="multistep-start-row" class="row">
+                                <div id="multistep-start-column" class="col-12 m-auto">
+                                    <div class="multisteps-form__form">
+
+                                        <div id="single-form-next" class="rounded bg-white js-active" data-animation="scaleIn">
+                                            <div id="form-content" class="multisteps-form__content">
+                                                <div id="input-grp-single" class="form-row">
+                                                    <div class="col-12">
+                                                        <label asp-for="CandidateId"></label>
+                                                            <select asp-for="CandidateId" class="form-control multisteps-form__input" asp-items="ViewBag.CandidateId" ></select>
+                                                            
+                                                        <span asp-validation-for="CandidateId" class="text-danger"></span>
+                                                    </div>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div class="modal-footer justify-content-center container border-0">
+                    <button class="btn btn-primary col" type="submit">Add</button>
+                    <button class="btn btn-light col" type="button" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    </div>
+</div>

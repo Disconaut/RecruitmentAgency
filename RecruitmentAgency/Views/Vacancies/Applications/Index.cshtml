@@ -1,0 +1,178 @@
+﻿@using RecruitmentAgency.Models
+@model VacancyApplicationsResponse
+
+@{
+    ViewData["Title"] = "Applications";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <h3 class="text-dark mb-1">Applications</h3>
+            <h5 class="text-muted mb-4 position-relative">
+                Vacancy: @Model.VacancyJobTitle for @Model.VacancyCustomer, '@Model.VacancyCompany'<a class="stretched-link btn btn-link px-1 py-1" role="button" style="font-size: 18px;" title="Details" onclick="openVacancyDetails(@Model.VacancyId, false)"><i class="fas fa-info-circle"></i></a>
+            </h5>
+        </div>
+        @if (!Model.VacancyClosed)
+        {
+            <div class="col text-right">
+                <a class="btn btn-primary" onclick="openApplicationCreate(@Model.VacancyId)"><i class="fa fa-plus"></i> Create new</a>
+            </div>
+        }
+    </div>
+    <div class="card shadow">
+        <div class="card-body">
+            @*<form method="get" asp-action="Applications">
+                    <div class="row">
+                        <div class="col-md-6 text-nowrap">
+                            <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable">
+                                <label asp-for="Applications.PageSize">
+                                    Show&nbsp;
+                                    <select asp-for="Applications.PageSize" class="form-control form-control-sm custom-select custom-select-sm" asp-items="Model.Applications.DefaultPageSizes" onchange="this.form.submit()">
+                                    </select>&nbsp;
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-md-right dataTables_filter" id="dataTable_filter">
+                                <label asp-for="Applications.SearchQuery"><input asp-for="Applications.SearchQuery" type="search" class="form-control form-control-sm" aria-controls="dataTable" placeholder="Search" /></label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                    @if (Model.Applications.TotalItems > 0)
+                    {*@
+            <table class="table my-0" id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Candidate</th>
+                        <th>Department</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Applications)
+                    {
+                        <tr>
+                            <td class="text-truncate" title="@($"{item.Candidate.FirstName} {item.Candidate.LastName}")">@($"{item.Candidate.FirstName} {item.Candidate.LastName}")</td>
+                            <td class="text-truncate" title="@($"{item.Candidate.Department.City.Name}, {item.Candidate.Department.Address}")">@($"{item.Candidate.Department.City.Name}, {item.Candidate.Department.Address}")</td>
+                            <td>@item.ApplicationStatus.Name</td>
+                            <td>
+                                <div class="dropdown show no-arrow">
+                                    <button class="btn btn-link btn-sm dropdown-toggle" aria-expanded="false" data-toggle="dropdown" type="button"><i class="fas fa-ellipsis-v text-gray-400"></i></button>
+                                    <div class="dropdown-menu shadow dropdown-menu-right animated--fade-in">
+                                        <a class="dropdown-item" onclick="openVacancyDetails(@item.VacancyId)" role="button">&nbsp;View details</a><a class="dropdown-item" href="#">&nbsp;View applications</a>
+                                        @if (item.ApplicationStatusId != (int)ApplicationStatusEnum.Hired)
+                                        {
+                                            <div class="dropdown-divider"></div>
+                                            <span class="dropdown-header">Set status</span>
+                                            @if (item.ApplicationStatusId == (int)ApplicationStatusEnum.New)
+                                            {
+                                                <a class="dropdown-item dropdown-toggle d-inline-block text-truncate" title="Selected fot interview" role="button" data-toggle="dropdown" aria-expanded="false" onclick="setApplicationStatus(@item.ApplicationId, @((int)ApplicationStatusEnum.SelectedForInterview))">
+                                                    &nbsp;Selected for interview
+                                                </a>
+                                            }
+                                            @if (item.ApplicationStatusId == (int)ApplicationStatusEnum.CustomerValidation)
+                                            {
+                                                <a class="dropdown-item dropdown-toggle d-inline-block text-truncate" title="Selected fot interview" role="button" data-toggle="dropdown" aria-expanded="false" onclick="setApplicationStatus(@item.ApplicationId, @((int)ApplicationStatusEnum.Offering))">
+                                                    &nbsp;Offering
+                                                </a>
+                                                <a class="dropdown-item dropdown-toggle d-inline-block text-truncate" title="Selected fot interview" role="button" data-toggle="dropdown" aria-expanded="false" onclick="setApplicationStatus(@item.ApplicationId, @((int)ApplicationStatusEnum.SelectedForInterview))">
+                                                    &nbsp;Selected for interview
+                                                </a>
+                                            }
+                                            @if (item.ApplicationStatusId == (int)ApplicationStatusEnum.SelectedForInterview)
+                                            {
+                                                <a class="dropdown-item dropdown-toggle d-inline-block text-truncate" title="Selected fot interview" role="button" data-toggle="dropdown" aria-expanded="false" onclick="setApplicationStatus(@item.ApplicationId, @((int)ApplicationStatusEnum.CustomerValidation))">
+                                                    &nbsp;Customer validation
+                                                </a>
+                                            }
+                                            @if (item.ApplicationStatusId == (int)ApplicationStatusEnum.Offering)
+                                            {
+
+                                                <a class="dropdown-item dropdown-toggle d-inline-block text-truncate" title="Selected fot interview" role="button" data-toggle="dropdown" aria-expanded="false" onclick="setApplicationStatus(@item.ApplicationId, @((int)ApplicationStatusEnum.Hired))">
+                                                    &nbsp;Hired
+                                                </a>
+                                            }
+                                            @if (item.ApplicationStatusId == (int)ApplicationStatusEnum.Canceled)
+                                            {
+                                                <a class="dropdown-item dropdown-toggle d-inline-block text-truncate" title="Selected fot interview" role="button" data-toggle="dropdown" aria-expanded="false" onclick="setApplicationStatus(@item.ApplicationId, @((int)ApplicationStatusEnum.New))">
+                                                    &nbsp;Renew
+                                                </a>
+                                            }
+                                            <a class="dropdown-item dropdown-toggle d-inline-block text-truncate" title="Selected fot interview" role="button" data-toggle="dropdown" aria-expanded="false" onclick="setApplicationStatus(@item.ApplicationId, @((int)ApplicationStatusEnum.Canceled))">
+                                                &nbsp;Canceled
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th><strong>Candidate</strong></th>
+                        <th><strong>Department</strong></th>
+                        <th><strong>Status</strong></th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+            </table>
+            @*}
+                    else
+                    {
+                        <partial name="_NoResultsPlaceholder" />
+                    }
+                </div>
+                @if (Model.Applications.CountOfPages > 0)
+                {
+                    <partial name="_Pagination" model="Model.Applications" />
+                }*@
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        $('#dataTable').DataTable({
+            searchPane: false,
+            columnDefs: [
+                {
+                    targets: [3],
+                    orderable: false,
+                    searchable: false,
+                    searchPanes: { show: false }
+                },
+                {
+                    targets: [1, 2],
+                    searchPanes: { show: true }
+                },
+                {
+                    targets: [2],
+                    searchable: false
+                }
+            ],
+            language: {
+                searchPanes: {
+                    collapse: { 0: '<i class="fas fa-filter"></i>', _: '<i class="fas fa-filter"></i> (%d)' }
+                }
+            },
+            buttons: [
+                {
+                    extend: 'searchPanes',
+                    className: 'btn btn-light',
+                    titleAttr: 'Filters'
+                }
+            ],
+            dom:
+                "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6 d-flex flex-row-reverse no-gutters align-items-center'" +
+                "<'col-sm-auto col-12 text-right ml-2 mb-2'B><'col-sm-auto col-12'f>>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
+        });
+    </script>
+}

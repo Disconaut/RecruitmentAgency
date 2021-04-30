@@ -1,0 +1,26 @@
+﻿@model PaginatedBase
+@{
+    var pageStart = Model.PageIndex == Model.CountOfPages ? Model.PageIndex - 2 : Model.PageIndex - 1;
+    pageStart = Math.Max(pageStart, 1);
+    var countOfVisiblePages = Math.Min(Model.CountOfPages, 3);
+}
+
+<div class="row">
+    <div class="col-md-6 align-self-center">
+        <p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">Showing @((Model.PageIndex - 1) * Model.PageSize + 1) to @Math.Min(Model.PageIndex * Model.PageSize, @Model.TotalItems) of @Model.TotalItems</p>
+    </div>
+    <div class="col-md-6">
+        <nav class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers">
+            <ul class="pagination">
+                <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")"><a class="page-link" aria-label="Previous" asp-route-pageIndex="@(Model.PageIndex - 1)"><span aria-hidden="true">«</span></a></li>
+                @foreach (var pageNum in Enumerable.Range(pageStart, countOfVisiblePages))
+                {
+                    <li class="page-item @(pageNum == Model.PageIndex ? "active" : "")">
+                        <a class="page-link" asp-route-pageIndex="@pageNum">@pageNum</a>
+                    </li>
+                }
+                <li class="page-item @(Model.HasNextPage ? "" : "disabled")"><a class="page-link" aria-label="Next" asp-route-pageIndex="@(Model.PageIndex + 1)"><span aria-hidden="true">»</span></a></li>
+            </ul>
+        </nav>
+    </div>
+</div>

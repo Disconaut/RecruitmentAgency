@@ -1,0 +1,87 @@
+﻿@model RecruitmentAgency.Models.Candidate
+
+@{
+    ViewData["Title"] = "Create candidate";
+}
+
+<div class="container-fluid">
+    <section>
+        <div id="multple-step-form-n" class="container overflow-hidden" style="margin-top: 0px;margin-bottom: 10px;padding-bottom: 50px;padding-top: 57px;">
+
+            <div id="multistep-start-row" class="row">
+                <div id="multistep-start-column" class="col-12 col-lg-8 m-auto">
+                    <form id="main-form" class="multisteps-form__form" asp-action="Create" enctype="multipart/form-data">
+
+                        <div id="single-form-next" class="multisteps-form__panel p-4 shadow rounded bg-white js-active" data-animation="scaleIn">
+                            <h3 class="text-center multisteps-form__title">Create candidate</h3>
+                            <div id="form-content" class="multisteps-form__content">
+                                
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <div id="input-grp-double" class="form-row mt-4">
+                                    <div class="col-12 col-sm-6">
+                                        <label asp-for="FirstName"></label>
+                                        <input asp-for="FirstName" class="form-control multisteps-form__input" type="text">
+
+                                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-12 col-sm-6 mt-4 mt-sm-0">
+                                        <label asp-for="LastName"></label>
+                                        <input asp-for="LastName" class="form-control multisteps-form__input" type="text">
+
+                                        <span asp-validation-for="LastName" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div id="input-grp-single" class="form-row mt-4">
+                                    <div class="col-12">
+                                        <label asp-for="DepartmentId"></label>
+                                        <select asp-for="DepartmentId" class="form-control custom-select multisteps-form__input" asp-items="ViewBag.DepartmentId"></select>
+                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    </div>
+
+
+                                </div>
+                                <div id="input-grp-single" class="form-row mt-4">
+                                    <div class="col-12">
+                                        <label asp-for="Email"></label>
+                                        <input asp-for="Email" class="form-control multisteps-form__input" type="email">
+                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    </div>
+
+
+                                </div>
+                                <div id="input-grp-single" class="form-row mt-4">
+                                    <div class="col-12">
+                                        <label asp-for="PhoneNumber"></label>
+                                        <input asp-for="PhoneNumber" class="form-control multisteps-form__input" type="text">
+                                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                    </div>
+
+
+                                </div>
+                                <div id="input-grp-single" class="form-row mt-4">
+                                    <div class="col-12">
+                                        <label asp-for="ResumeUrl"></label>
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" asp-for="Resume">
+                                            <label class="custom-file-label" asp-for="Resume">Choose file...</label>
+
+                                        </div><span asp-validation-for="Resume" class="text-danger"></span>
+                                    </div>
+
+
+                                </div>
+                                <div class="button-row d-flex mt-4"><button class="btn btn btn-secondary " type="button" onclick="history.back()" title="Back">Back</button><button class="btn btn btn-primary ml-auto " type="submit" title="Create">Create</button></div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

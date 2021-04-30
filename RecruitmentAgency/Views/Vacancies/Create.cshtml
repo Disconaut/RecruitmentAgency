@@ -1,0 +1,156 @@
+﻿@using System.Globalization
+@using Newtonsoft.Json
+@model RecruitmentAgency.Models.Vacancy
+
+@{
+    ViewData["Title"] = "Create vacancy";
+}
+
+<div class="container-fluid">
+    <section>
+        <div id="multple-step-form-n" class="container overflow-hidden" style="margin-top: 0px;margin-bottom: 10px;padding-bottom: 50px;padding-top: 57px;">
+
+            <div id="multistep-start-row" class="row">
+                <div id="multistep-start-column" class="col-12 col-lg-8 m-auto">
+                    <form id="main-form" class="multisteps-form__form" asp-action="Create">
+                        <div id="single-form-next" class=" p-4 shadow rounded bg-white js-active" data-animation="scaleIn">
+                            <h3 class="text-center multisteps-form__title">Create vacancy</h3>
+                            <div id="form-content" class="multisteps-form__content">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <div class="form-row mt-4">
+                                    <div class="col-12 col-sm-6">
+                                        <label asp-for="CompanyOffice.CompanyId"></label>
+                                        <select asp-for="CompanyOffice.CompanyId" class="form-control custom-select multisteps-form__input" onchange="onCompanyChange(event)" asp-items="ViewBag.CompanyId"></select>
+
+                                        <span asp-validation-for="CompanyOffice.CompanyId" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-12 col-sm-6 mt-4 mt-sm-0">
+                                        <label asp-for="CompanyOfficeId"></label>
+                                        <select asp-for="CompanyOfficeId" class="form-control custom-select multisteps-form__input"></select>
+
+                                        <span asp-validation-for="CompanyOfficeId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-row mt-4">
+                                    <div class="col-12">
+                                        <label asp-for="CustomerId"></label>
+                                        <select asp-for="CustomerId" class="form-control custom-select multisteps-form__input"></select>
+                                        <span asp-validation-for="CustomerId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-row mt-4">
+                                    <div class="col-12">
+                                        <label asp-for="TariffId"></label>
+                                        <select asp-for="TariffId" class="form-control custom-select multisteps-form__input" onchange="calculateCost()" asp-items="ViewBag.TariffId"></select>
+                                        <span asp-validation-for="TariffId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-row mt-4">
+                                    <div class="col-12 col-sm-6">
+                                        <label asp-for="JobTitle.JobCategoryId"></label>
+                                        <select asp-for="JobTitle.JobCategoryId" class="form-control custom-select multisteps-form__input" onchange="onJobCategoryChange(event)" asp-items="ViewBag.JobCategoryId"></select>
+
+                                        <span asp-validation-for="JobTitle.JobCategoryId" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-12 col-sm-6 mt-4 mt-sm-0">
+                                        <label asp-for="JobTitleId"></label>
+                                        <select asp-for="JobTitleId" class="form-control custom-select multisteps-form__input"></select>
+
+                                        <span asp-validation-for="JobTitleId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-row mt-4">
+                                    <div class="col-12">
+                                        <label asp-for="PositionsCount"></label>
+                                        <input asp-for="PositionsCount" class="form-control multisteps-form__input" onchange="calculateCost()" type="number">
+                                        <span asp-validation-for="PositionsCount" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-row mt-4">
+                                    <div class="col-12">
+                                        <label asp-for="Requirements"></label>
+                                        <textarea asp-for="Requirements" class="form-control multisteps-form__input"></textarea>
+                                        <span asp-validation-for="Requirements" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-row mt-4">
+                                    <div class="col-12">
+                                        <label>Estimated cost: <span id="estimatedCost">0</span> @NumberFormatInfo.CurrentInfo.CurrencySymbol</label>
+                                    </div>
+                                </div>
+                                <div class="button-row d-flex mt-4"><button class="btn btn btn-secondary" type="button" onclick="history.back()" title="Back">Back</button><button class="btn btn btn-primary ml-auto" type="submit" title="Create">Create</button></div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        var companyOffices = JSON.parse('@Html.Raw(JsonConvert.SerializeObject(ViewBag.CompanyOffice, new JsonSerializerSettings{StringEscapeHandling = StringEscapeHandling.EscapeHtml}))');
+        var customers = JSON.parse('@Html.Raw(JsonConvert.SerializeObject(ViewBag.Customer, new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeHtml }))');
+        var jobTitles = JSON.parse('@Html.Raw(JsonConvert.SerializeObject(ViewBag.JobTitle, new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeHtml }))');
+        var tariffs = JSON.parse('@Html.Raw(JsonConvert.SerializeObject(ViewBag.Tariff, new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeHtml }))');
+
+        function removeOptions(selectElement) {
+            var i, L = selectElement.options.length - 1;
+            for (i = L; i >= 0; i--) {
+                selectElement.remove(i);
+            }
+        }
+
+        function onCompanyChange(e) {
+            const officeSelect = document.getElementById('@Html.IdFor(model => model.CompanyOfficeId)');
+            const customerSelect = document.getElementById('@Html.IdFor(x => x.CustomerId)');
+
+            removeOptions(customerSelect);
+            removeOptions(officeSelect);
+            companyOffices.filter(x => x.CompanyId == e.target.value).forEach(x => {
+                const option = document.createElement('option');
+                option.value = x.Value;
+                option.text = x.Text;
+                officeSelect.add(option);
+            });
+
+            customers.filter(x => x.CompanyId == e.target.value).forEach(x => {
+                const option = document.createElement('option');
+                option.value = x.Value;
+                option.text = x.Text;
+                customerSelect.add(option);
+            });
+
+            customerSelect.disabled = customerSelect.options.length <= 0;
+            officeSelect.disabled = officeSelect.options.length <= 0;
+        }
+
+        function onJobCategoryChange(e) {
+            const jobTitle = document.getElementById('@Html.IdFor(model => model.JobTitleId)');
+
+            removeOptions(jobTitle);
+            jobTitles.filter(x => x.JobCategoryId == e.target.value).forEach(x => {
+                const option = document.createElement('option');
+                option.value = x.Value;
+                option.text = x.Text;
+                jobTitle.add(option);
+            });
+
+            jobTitle.disabled = jobTitle.options.length <= 0;
+        }
+
+        function calculateCost() {
+            const tariffId = document.getElementById('@Html.IdFor(x => x.TariffId)').value;
+            const price = tariffs.filter(x => x.Value == tariffId)[0].Cost;
+            const positions = document.getElementById('@Html.IdFor(x => x.PositionsCount)').value;
+
+            document.getElementById("estimatedCost").innerText = (price * positions) || 0;
+        }
+
+        $('#@Html.IdFor(x => x.CompanyOffice.CompanyId)').trigger('change');
+        $('#@Html.IdFor(x => x.JobTitle.JobCategoryId)').trigger('change');
+    </script>
+}

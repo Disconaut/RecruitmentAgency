@@ -1,0 +1,137 @@
+﻿@model IEnumerable<RecruitmentAgency.Models.Employee>
+
+@{
+    ViewData["Title"] = "Recruiters";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <h3 class="text-dark mb-4">Recruiters</h3>
+        </div>
+        <div class="col text-right">
+            <a class="btn btn-primary" asp-controller="Employees" asp-action="CreateRecruiter"><i class="fa fa-plus"></i> Create new</a>
+        </div>
+    </div>
+    <div class="card shadow">
+        <div class="card-body">
+            @*<form method="get" asp-action="Recruiters">
+                <div class="row">
+                    <div class="col-md-6 text-nowrap">
+                        <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable">
+                            <label asp-for="PageSize">
+                                Show&nbsp;
+                                <select asp-for="PageSize" class="form-control form-control-sm custom-select custom-select-sm" asp-items="Model.DefaultPageSizes" onchange="this.form.submit()">
+                                </select>&nbsp;
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="text-md-right dataTables_filter" id="dataTable_filter">
+                            <label asp-for="SearchQuery"><input asp-for="SearchQuery" type="search" class="form-control form-control-sm" aria-controls="dataTable" placeholder="Search" /></label>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                @if (Model.TotalItems > 0)
+                {*@
+            <table class="table my-0" id="dataTable">
+                <thead>
+                <tr>
+                    <th>Full name</th>
+                    <th>Department</th>
+                    <th>Applications (In work)</th>
+                    <th>Scheduled interviews</th>
+                    <th>Closed vacancies</th>
+                    <th>Rating</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="text-truncate" title="@($"{item.FirstName} {item.LastName}")">@($"{item.FirstName} {item.LastName}")</td>
+                        <td class="text-truncate" title="@($"{item.Department.City.Name}, {item.Department.Address}")">@($"{item.Department.City.Name}, {item.Department.Address}")</td>
+                        <td>@item.Vacancies.Select(x => x.Applications.Count(x => x.ApplicationStatus.Name != "Hired")).Sum()</td>
+                        <td>@item.Vacancies.SelectMany(x => x.Applications).Select(x => x.Interviews.Count(x => string.IsNullOrWhiteSpace(x.Feedback))).Sum()</td>
+                        <td>@item.Vacancies.Count(x => x.EndDate.HasValue)</td>
+                        <td>@(item.Rating?.ToString() ?? "--")</td>
+                        <td>
+                            <div class="dropdown show no-arrow">
+                                <button class="btn btn-link btn-sm dropdown-toggle" aria-expanded="false" data-toggle="dropdown" type="button"><i class="fas fa-ellipsis-v text-gray-400"></i></button>
+                                <div class="dropdown-menu shadow dropdown-menu-right animated--fade-in">
+                                    <a class="dropdown-item" onclick="openRecruiterDetails(@item.EmployeeId)">&nbsp;View details</a>
+                                    <a class="dropdown-item" asp-action="EditRecruiter" asp-route-id="@item.EmployeeId">&nbsp;Edit recruiter</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+                <tfoot>
+                <tr>
+                    <th><strong>Full name</strong></th>
+                    <th><strong>Department</strong></th>
+                    <th><strong>Applications (In work)</strong></th>
+                    <th><strong>Scheduled interviews</strong></th>
+                    <th><strong>Closed vacancies</strong></th>
+                    <th><strong>Rating</strong></th>
+                    <th></th>
+                </tr>
+                </tfoot>
+            </table>
+            @*}
+                else
+                {
+                    <partial name="_NoResultsPlaceholder" />
+                }
+            </div>
+            @if (Model.CountOfPages > 0)
+            {
+                <partial name="_Pagination" model="Model" />
+            }*@
+        </div>
+    </div>
+</div>
+    
+    @section Scripts {
+        <script>
+            $('#dataTable').DataTable({
+                searchPane: true,
+                columnDefs: [
+                    {
+                        targets: [2, 3, 4, 5],
+                        searchPanes: { show: false },
+                        searchable: false
+                    },
+                    {
+                        targets: [6],
+                        searchPanes: { show: false },
+                        searchable: false,
+                        orderable: false
+                    },
+                    {
+                        targets: [1],
+                        searchPanes: { show: true }
+                    }
+                ],
+                language: {
+                    searchPanes: {
+                        collapse: { 0: '<i class="fas fa-filter"></i>', _: '<i class="fas fa-filter"></i> (%d)' }
+                    }
+                },
+                buttons: [{
+                    extend: 'searchPanes',
+                    className: 'btn btn-light',
+                    titleAttr: 'Filters'
+                }],
+                dom:
+                    "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6 d-flex flex-row-reverse no-gutters align-items-center'" +
+                        "<'col-sm-auto col-12 text-right ml-2 mb-2'B><'col-sm-auto col-12'f>>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
+            });
+        </script>
+    }

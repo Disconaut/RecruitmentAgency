@@ -1,0 +1,199 @@
+﻿@using Microsoft.EntityFrameworkCore.Metadata.Internal
+@using Newtonsoft.Json
+@using System.Globalization
+@model RecruitmentAgency.ViewModels.PaymentFilter
+
+@{
+    ViewData["Title"] = "Payments";
+}
+
+<div class="container-fluid">
+    <section>
+        <div id="multple-step-form-n" class="container overflow-hidden" style="margin-top: 0px;margin-bottom: 10px;padding-bottom: 50px;padding-top: 57px;">
+
+            <div id="multistep-start-row" class="row">
+                <div id="multistep-start-column" class="col-12 col-lg-8 m-auto">
+                    <form id="main_form" class="multisteps-form__form">
+
+                        <div id="single-form-next" class="multisteps-form__panel p-4 shadow rounded bg-white js-active" data-animation="scaleIn">
+                            <h3 class="text-center multisteps-form__title">Get sum of payments</h3>
+                            <div id="form-content" class="multisteps-form__content">
+
+                                <div id="input-grp-double" class="form-row mt-4">
+                                    <div class="col-12 col-sm-4">
+                                        <label asp-for="Year"></label>
+                                        <select asp-for="Year" class="form-control custom-select multisteps-form__input" onchange="onYearChange(event)" asp-items="ViewBag.Year"></select>
+
+                                    </div>
+                                    <div class="col-12 col-sm-4 mt-4 mt-sm-0">
+                                        <label asp-for="Month"></label>
+                                        <select asp-for="Month" class="form-control custom-select multisteps-form__input" onchange="onMonthChange(event)"></select>
+                                    </div>
+                                    <div class="col-12 col-sm-4 mt-4 mt-sm-0">
+                                        <label asp-for="Day"></label>
+                                        <select asp-for="Day" class="form-control custom-select multisteps-form__input" onchange="onSelectChange(event)"></select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <div id="input-grp-single" class="form-row mt-4">
+                                            <div class="col-12">
+                                                <label asp-for="DepartmentId"></label>
+                                                <select asp-for="DepartmentId" class="form-control custom-select multisteps-form__input" onchange="onDepartmentChange(event)" asp-items="ViewBag.DepartmentId"></select>
+                                            </div>
+
+
+                                        </div>
+                                        <div id="input-grp-single" class="form-row mt-4">
+                                            <div class="col-12">
+                                                <label asp-for="RecruiterId"></label>
+                                                <select asp-for="RecruiterId" class="form-control custom-select multisteps-form__input" onchange="onSelectChange(event)"></select>
+                                            </div>
+
+
+                                        </div>
+                                        <div id="input-grp-single" class="form-row mt-4">
+                                            <div class="col-12">
+                                                <label asp-for="CustomerId"></label>
+                                                <select asp-for="CustomerId" class="form-control custom-select multisteps-form__input" onchange="onSelectChange(event)" asp-items="ViewBag.CustomerId"></select>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6 mt-4 mt-sm-0 d-flex flex-column justify-content-center align-items-center">
+                                        <span class="h5">Payments sum</span>
+                                        <span class="h2 text-dark"><span id="sumpay">0</span> @NumberFormatInfo.CurrentInfo.CurrencySymbol</span>
+                                    </div>
+                                </div>
+                                <div class="button-row d-flex mt-4"><button class="btn btn btn-secondary js-btn-prev" type="button" onclick="history.back()" title="Back">Back</button></div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+<script>
+        var months = [
+            { value: -1, text: 'All' },
+            { value: 1, text: 'January' },
+            { value: 2, text: 'February' },
+            { value: 3, text: 'March' },
+            { value: 4, text: 'April' },
+            { value: 5, text: 'May' },
+            { value: 6, text: 'June' },
+            { value: 7, text: 'July' },
+            { value: 8, text: 'August' },
+            { value: 9, text: 'September' },
+            { value: 10, text: 'October' },
+            { value: 11, text: 'November' },
+            { value: 12, text: 'December' }
+        ];
+        var days = [
+            { value: -1, text: 'All' },
+            { value: 1 },
+            { value: 2 },
+            { value: 3 },
+            { value: 4 },
+            { value: 5 },
+            { value: 6 },
+            { value: 7 },
+            { value: 8 },
+            { value: 9 },
+            { value: 10 },
+            { value: 11 },
+            { value: 12 },
+            { value: 13 },
+            { value: 14 },
+            { value: 15 },
+            { value: 16 },
+            { value: 17 },
+            { value: 18 },
+            { value: 19 },
+            { value: 20 },
+            { value: 21 },
+            { value: 22 },
+            { value: 23 },
+            { value: 24 },
+            { value: 25 },
+            { value: 26 },
+            { value: 27 },
+            { value: 28 },
+            { value: 29 },
+            { value: 30 },
+            { value: 31 }
+        ];
+        var recruiters = JSON.parse('@Html.Raw(JsonConvert.SerializeObject(ViewBag.Recruiters, new JsonSerializerSettings {StringEscapeHandling = StringEscapeHandling.EscapeHtml}))');
+
+        function removeOptions(selectElement) {
+            var i, L = selectElement.options.length - 1;
+            for (i = L; i >= 0; i--) {
+                selectElement.remove(i);
+            }
+        }
+
+        function onYearChange(e) {
+            const month = document.getElementById('@Html.IdFor(model => model.Month)');
+
+            removeOptions(month);
+            months.filter(x => x.value == -1 || e.target.value != -1).forEach((x) => {
+                const option = document.createElement('option');
+                option.value = x.value;
+                option.text = x.text;
+                month.add(option);
+            });
+
+            month.disabled = month.options.length <= 1;
+            onSelectChange(e);
+        }
+
+        function onMonthChange(e) {
+            const day = document.getElementById('@Html.IdFor(model => model.Day)');
+            const daysInMonth = new Date($('#@Html.IdFor(model => model.Year)').val(), e.target.value, 0).getDate();
+
+            removeOptions(day);
+            days.filter(x => x.value == -1 || (e.target.value != -1 && x.value <= daysInMonth)).forEach((x) => {
+                const option = document.createElement('option');
+                option.value = x.value;
+                option.text = x.text || x.value;
+                day.add(option);
+            });
+
+            day.disabled = day.options.length <= 1;
+            onSelectChange(e);
+        }
+
+        function onDepartmentChange(e) {
+            const recruiter = document.getElementById('@Html.IdFor(model => model.RecruiterId)');
+
+            removeOptions(recruiter);
+            recruiters.filter(x => x.DepartmentId == e.target.value || e.target.value == -1 || x.Value == '-1').forEach(x => {
+                const option = document.createElement('option');
+                option.value = x.Value;
+                option.text = x.Text;
+                recruiter.add(option);
+            });
+
+            onSelectChange(e);
+        }
+
+        function onSelectChange(e) {
+            const query = $('#main_form').serialize();
+            $.ajax(`/api/Payments${query ? `?${query}` : ''}`).then((data) => {
+                $('#sumpay').text(data || 0);
+            });
+    }
+
+    $('#@Html.IdFor(model => model.Year)').trigger('change');
+    $('#@Html.IdFor(model => model.DepartmentId)').trigger('change');
+    $('#@Html.IdFor(model => model.Month)').trigger('change');
+
+</script>
+}

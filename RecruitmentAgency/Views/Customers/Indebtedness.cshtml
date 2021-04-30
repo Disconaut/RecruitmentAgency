@@ -1,0 +1,187 @@
+﻿@model IndebtednessResponse
+
+@{
+    ViewData["Title"] = "Indebtedness";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <h3 class="text-dark mb-4">Indebtedness</h3>
+            <h5 class="text-muted mb-4 position-relative">
+                Customer: @Model.CustomerFullName from '@Model.CustomerCompany'<a class="stretched-link btn btn-link px-1 py-1" role="button" style="font-size: 18px;" title="Details" onclick="openCustomerDetails(@Model.CustomerId, false)"><i class="fas fa-info-circle"></i></a>
+            </h5>
+        </div>
+    </div>
+    <div class="card shadow">
+        <div class="card-body">
+            @*<form method="get" asp-action="Index">
+                    <div class="row">
+                        <div class="col-md-6 text-nowrap">
+                            <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable">
+                                <label asp-for="Vacancies.PageSize">
+                                    Show&nbsp;
+                                    <select asp-for="Vacancies.PageSize" class="form-control form-control-sm custom-select custom-select-sm" asp-items="Model.Vacancies.DefaultPageSizes" onchange="this.form.submit()">
+                                    </select>&nbsp;
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-md-right dataTables_filter" id="dataTable_filter">
+                                <label asp-for="Vacancies.SearchQuery"><input asp-for="Vacancies.SearchQuery" type="search" class="form-control form-control-sm" aria-controls="dataTable" placeholder="Search" /></label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                    @if (Model.Vacancies.TotalItems > 0)
+                    {*@
+            <table class="table my-0" id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Company office</th>
+                        <th>Job title</th>
+                        <th>Positions</th>
+                        <th>Start date</th>
+                        <th>Closed</th>
+                        <th>Dept</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Vacancies)
+                    {
+                        <tr>
+                            <td class="text-truncate" title="@($"{item.CompanyOffice.City.Name}, {item.CompanyOffice.Address}")">@($"{item.CompanyOffice.City.Name}, {item.CompanyOffice.Address}")</td>
+                            <td class="text-truncate" title="@item.JobTitle.Name">@item.JobTitle.Name</td>
+                            <td>@item.PositionsCount</td>
+                            <td>@item.StartDate.ToString("dd.MM.yyyy")</td>
+                            <td>
+                                @*@if (item.EndDate.HasValue)
+                                {
+                                    <i class="fas fa-check text-success"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa fa-close text-danger"></i>
+                                }*@
+                                @item.EndDate.HasValue
+                            </td>
+                            <td>@(((item.Tariff.PriceForCandidate * item.PositionsCount) - item.Payments.Sum(x => x.Sum)).ToString("C"))</td>
+                            <td>
+                                <div class="dropdown show no-arrow">
+                                    <button class="btn btn-link btn-sm dropdown-toggle" aria-expanded="false" data-toggle="dropdown" type="button"><i class="fas fa-ellipsis-v text-gray-400"></i></button>
+                                    <div class="dropdown-menu shadow dropdown-menu-right animated--fade-in">
+                                        <a class="dropdown-item" onclick="openVacancyDetails(@item.VacancyId)" role="button">&nbsp;View details</a>
+                                        @if (User.IsInRole("Recruiter"))
+                                        {
+                                            <a class="dropdown-item" asp-action="Applications" asp-controller="Vacancies" asp-route-vacancyId="@item.VacancyId">&nbsp;View applications</a>
+                                            <a class="dropdown-item" onclick="openApplicationCreate(@item.VacancyId)">&nbsp;Add application</a>
+                                            <a class="dropdown-item" onclick="openCreatePayment(@item.VacancyId)" role="button">&nbsp;Add payment</a>
+                                        }
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th><strong>Company office</strong></th>
+                        <th><strong>Job title</strong></th>
+                        <th><strong>Positions</strong></th>
+                        <th><strong>Start date</strong></th>
+                        <th><strong>Closed</strong></th>
+                        <th><strong>Dept</strong></th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+            </table>
+            @*}
+                    else
+                    {
+                        <partial name="_NoResultsPlaceholder" />
+                    }
+                </div>
+                @if (Model.Vacancies.CountOfPages > 0)
+                {
+                    <partial name="_Pagination" model="Model.Vacancies" />
+                }*@
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $('#dataTable').DataTable({
+            searchPane: true,
+            columnDefs: [
+                {
+                    targets: [6],
+                    orderable: false,
+                    searchable: false,
+                    searchPanes: { show: false }
+                },
+                {
+                    targets: [0, 1],
+                    searchPanes: { show: true }
+                },
+                {
+                    targets: [2, 5],
+                    searchable: false
+                },
+                {
+                    targets: [2, 3, 5],
+                    searchPanes: { show: false }
+                },
+                {
+                    targets: [4],
+                    orderable: false,
+                    searchable: false,
+                    render: function (rowData, rowIdx) {
+                        return rowData == 'True' ? '<i class="fas fa-check text-success"></i>' : '<i class="fa fa-close text-danger"></i>';
+                    },
+                    searchPanes: {
+                        show: true,
+                        options: [
+                            {
+                                label: 'Yes',
+                                value: function(rowData, rowIdx) {
+                                    return rowData[4] == 'True';
+                                }
+                            },
+                            {
+                                label: 'No',
+                                value: function(rowData, rowIdx) {
+                                    return rowData[4] == 'False';
+                                }
+                            }
+                        ]
+                    }
+                }
+            ],
+            language: {
+                searchPanes: {
+                    collapse: {
+                        0:
+                            '<i class="fas fa-filter"></i>',
+                        _:
+                            '<i class="fas fa-filter"></i> (%d)'
+                    }
+                }
+            },
+            buttons: [
+                {
+                    extend: 'searchPanes',
+                    className: 'btn btn-light',
+                    titleAttr: 'Filters'
+                }
+            ],
+            dom:
+                "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6 d-flex flex-row-reverse no-gutters align-items-center'" +
+                    "<'col-sm-auto col-12 text-right ml-2 mb-2'B><'col-sm-auto col-12'f>>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
+        });
+    </script>
+}

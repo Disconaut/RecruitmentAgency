@@ -1,0 +1,116 @@
+﻿@using System.Globalization
+@using Newtonsoft.Json
+@model RecruitmentAgency.Models.Vacancy
+
+@{
+    ViewData["Title"] = "Edit vacancy";
+}
+
+<div class="container-fluid">
+    <section>
+        <div id="multple-step-form-n" class="container overflow-hidden" style="margin-top: 0px;margin-bottom: 10px;padding-bottom: 50px;padding-top: 57px;">
+
+            <div id="multistep-start-row" class="row">
+                <div id="multistep-start-column" class="col-12 col-lg-8 m-auto">
+                    <form id="main-form" class="multisteps-form__form" asp-action="Edit">
+                        <input type="hidden" asp-for="VacancyId"/>
+                        <input type="hidden" asp-for="CreateDate"/>
+                        <input type="hidden" asp-for="StartDate"/>
+                        <input type="hidden" asp-for="EndDate"/>
+                        <input type="hidden" asp-for="RecruiterId"/>
+                        <input type="hidden" asp-for="CompanyOfficeId"/>
+                        <input type="hidden" asp-for="JobTitleId"/>
+                        <input type="hidden" asp-for="TariffId"/>
+                        <input type="hidden" asp-for="CustomerId"/>
+                        <div id="single-form-next" class=" p-4 shadow rounded bg-white js-active" data-animation="scaleIn">
+                            <h3 class="text-center multisteps-form__title">Edit vacancy</h3>
+                            <div id="form-content" class="multisteps-form__content">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <div class="form-row mt-4">
+                                    <div class="col-12 col-sm-6">
+                                        <label asp-for="CompanyOffice.CompanyId"></label>
+                                        <select asp-for="CompanyOffice.CompanyId" disabled class="form-control custom-select multisteps-form__input" asp-items="ViewBag.CompanyId"></select>
+
+                                        <span asp-validation-for="CompanyOffice.CompanyId" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-12 col-sm-6 mt-4 mt-sm-0">
+                                        <label asp-for="CompanyOfficeId"></label>
+                                        <select asp-for="CompanyOfficeId" disabled class="form-control custom-select multisteps-form__input" asp-items="ViewBag.CompanyOfficeId"></select>
+
+                                        <span asp-validation-for="CompanyOfficeId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-row mt-4">
+                                    <div class="col-12">
+                                        <label asp-for="CustomerId"></label>
+                                        <select asp-for="CustomerId" disabled class="form-control custom-select multisteps-form__input" asp-items="ViewBag.CustomerId"></select>
+                                        <span asp-validation-for="CustomerId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-row mt-4">
+                                    <div class="col-12">
+                                        <label asp-for="TariffId"></label>
+                                        <select asp-for="TariffId" disabled class="form-control custom-select multisteps-form__input" onchange="calculateCost()" asp-items="ViewBag.TariffId"></select>
+                                        <span asp-validation-for="TariffId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-row mt-4">
+                                    <div class="col-12 col-sm-6">
+                                        <label asp-for="JobTitle.JobCategoryId"></label>
+                                        <select asp-for="JobTitle.JobCategoryId" disabled class="form-control custom-select multisteps-form__input" asp-items="ViewBag.JobCategoryId"></select>
+
+                                        <span asp-validation-for="JobTitle.JobCategoryId" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-12 col-sm-6 mt-4 mt-sm-0">
+                                        <label asp-for="JobTitleId"></label>
+                                        <select asp-for="JobTitleId" disabled class="form-control custom-select multisteps-form__input" asp-items="ViewBag.JobTitleId"></select>
+
+                                        <span asp-validation-for="JobTitleId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-row mt-4">
+                                    <div class="col-12">
+                                        <label asp-for="PositionsCount"></label>
+                                        <input asp-for="PositionsCount" class="form-control multisteps-form__input" onchange="calculateCost()" min="@Model.Applications.Count(x => x.ApplicationStatus.Name == "Hired")" type="number">
+                                        <span asp-validation-for="PositionsCount" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-row mt-4">
+                                    <div class="col-12">
+                                        <label asp-for="Requirements"></label>
+                                        <textarea asp-for="Requirements" class="form-control multisteps-form__input"></textarea>
+                                        <span asp-validation-for="Requirements" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-row mt-4">
+                                    <div class="col-12">
+                                        <label>Estimated cost: <span id="estimatedCost">0</span> @NumberFormatInfo.CurrentInfo.CurrencySymbol</label>
+                                    </div>
+                                </div>
+                                <div class="button-row d-flex mt-4"><button class="btn btn btn-secondary" type="button" onclick="history.back()" title="Back">Back</button><button class="btn btn btn-primary ml-auto" type="submit" title="Save">Save</button></div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        var tariffs = JSON.parse('@Html.Raw(JsonConvert.SerializeObject(ViewBag.Tariff, new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeHtml }))');
+
+
+        function calculateCost() {
+            const tariffId = document.getElementById('@Html.IdFor(x => x.TariffId)').value;
+            const price = tariffs.filter(x => x.Value == tariffId)[0].Cost;
+            const positions = document.getElementById('@Html.IdFor(x => x.PositionsCount)').value;
+
+            document.getElementById("estimatedCost").innerText = (price * positions) || 0;
+        }
+        calculateCost();
+    </script>
+}

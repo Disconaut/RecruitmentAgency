@@ -1,0 +1,5 @@
+﻿.user .validation-summary-errors > ul {
+    list-style: none;
+    text-align: center;
+    padding: 0;
+}
